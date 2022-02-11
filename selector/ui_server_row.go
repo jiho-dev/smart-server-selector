@@ -1,9 +1,10 @@
 package selector
 
 import (
+	"strings"
+
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
-	"strings"
 )
 
 // an word split from str
@@ -14,28 +15,40 @@ type word struct {
 
 // row represent an server in server list, it wrapped one server's render logic.
 type row struct {
-	flex *tview.Flex
-	env  *tview.TextView
-	host *tview.TextView
-	desc *tview.TextView
+	flex      *tview.Flex
+	env       *tview.TextView
+	host_type *tview.TextView
+	host_name *tview.TextView
+	ip        *tview.TextView
+	desc      *tview.TextView
+	//score     *tview.TextView
 }
 
 // create an new row
 func newRow() *row {
 	r := &row{
-		flex: tview.NewFlex(),
-		env:  tview.NewTextView().SetDynamicColors(true).SetTextColor(tcell.ColorLawnGreen),
-		host: tview.NewTextView().SetDynamicColors(true).SetTextColor(tcell.ColorLawnGreen),
-		desc: tview.NewTextView().SetDynamicColors(true).SetTextColor(tcell.ColorLawnGreen),
+		flex:      tview.NewFlex(),
+		env:       tview.NewTextView().SetDynamicColors(true).SetTextColor(tcell.ColorLawnGreen),
+		host_type: tview.NewTextView().SetDynamicColors(true).SetTextColor(tcell.ColorLawnGreen),
+		host_name: tview.NewTextView().SetDynamicColors(true).SetTextColor(tcell.ColorLawnGreen),
+		ip:        tview.NewTextView().SetDynamicColors(true).SetTextColor(tcell.ColorLawnGreen),
+		desc:      tview.NewTextView().SetDynamicColors(true).SetTextColor(tcell.ColorLawnGreen),
+		//score:     tview.NewTextView().SetDynamicColors(true).SetTextColor(tcell.ColorLawnGreen),
 	}
 	r.flex.SetDirection(tview.FlexColumn)
-	r.flex.AddItem(r.env, 12, 1, false)
-	r.flex.AddItem(r.host, 30, 1, false)
+	r.flex.AddItem(r.env, 7, 1, false)
+	r.flex.AddItem(r.host_type, 12, 1, false)
+	r.flex.AddItem(r.host_name, 20, 1, false)
+	r.flex.AddItem(r.ip, 15, 1, false)
 	r.flex.AddItem(r.desc, 0, 10, false)
+	//r.flex.AddItem(r.score, 0, 10, false)
 
 	r.env.SetBackgroundColor(tcell.ColorDefault)
-	r.host.SetBackgroundColor(tcell.ColorDefault)
+	r.host_type.SetBackgroundColor(tcell.ColorDefault)
+	r.host_name.SetBackgroundColor(tcell.ColorDefault)
+	r.ip.SetBackgroundColor(tcell.ColorDefault)
 	r.desc.SetBackgroundColor(tcell.ColorDefault)
+	//r.score.SetBackgroundColor(tcell.ColorDefault)
 
 	return r
 }
@@ -47,21 +60,31 @@ func (r *row) render(s *server, selected bool, kws []string) {
 	} else {
 		r.flex.SetBackgroundColor(tcell.ColorDefault)
 	}
-	var env, host, desc string
+	var env, host_type, host_name, ip, desc string
+	//var score string
 	if s != nil {
 		env = s.env
-		host = s.host
-		desc = s.desc
-		if len(s.user) > 0 {
-			host = s.user + "@" + s.host
-		}
-		if len(s.port) > 0 {
-			host = host + ":" + s.port
-		}
+		host_type = s.host_type
+		host_name = s.host_name
+		ip = s.ip
+		//score = fmt.Sprintf("%d", s.score)
+		/*
+			host = s.ip
+			desc = s.desc
+			if len(s.user) > 0 {
+				host = s.user + "@" + s.ip
+			}
+			if len(s.port) > 0 {
+				host = host + ":" + s.port
+			}
+		*/
 	}
 	r.env.SetText(highlight(env, kws))
-	r.host.SetText(highlight(host, kws))
+	r.host_type.SetText(highlight(host_type, kws))
+	r.host_name.SetText(highlight(host_name, kws))
+	r.ip.SetText(highlight(ip, kws))
 	r.desc.SetText(highlight(desc, kws))
+	//r.score.SetText(score)
 }
 
 // generate highlight text for the specified string

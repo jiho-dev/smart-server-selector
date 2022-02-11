@@ -1,0 +1,5 @@
+
+---
+
+host-file: "/home/jiho.jung/src/jiho-dev/smart-server-selector/host.cfg"
+ssh-key-file1: "/home/jiho.jung/ssh-keys/labeu-dev2-private.priv"

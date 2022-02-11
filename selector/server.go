@@ -8,12 +8,14 @@ import (
 )
 
 type server struct {
-	env   string
-	host  string
-	port  string
-	user  string
-	desc  string
-	score int
+	env       string
+	host_type string
+	host_name string
+	ip        string
+	port      string
+	user      string
+	desc      string
+	score     int
 }
 
 type serverArray []server
@@ -22,21 +24,29 @@ func (a serverArray) Len() int      { return len(a) }
 func (a serverArray) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a serverArray) Less(i, j int) bool {
 	if a[i].score != a[j].score {
-		return a[i].score < a[j].score
+		// XXX: descending
+		return a[i].score > a[j].score
 	}
+
 	if a[i].env != a[j].env {
 		return a[i].env < a[j].env
 	}
-	if a[i].host != a[j].host {
-		return a[i].host < a[j].host
+
+	if a[i].host_type != a[j].host_type {
+		return a[i].host_type < a[j].host_type
 	}
+
+	if a[i].host_name != a[j].host_name {
+		return a[i].host_name < a[j].host_name
+	}
+
 	return i < j
 }
 
 // load servers from config file.
-func loadServers() (arr []server) {
+func loadServers(cfg string) (arr []server) {
 	arr = make([]server, 0)
-	fs, _ := ioutil.ReadFile(SssFile)
+	fs, _ := ioutil.ReadFile(cfg)
 	if len(fs) == 0 {
 		return
 	}
@@ -72,16 +82,19 @@ var fullPtn = regexp.MustCompile("^(\\w+)\\s+([\\w.]+)\\s+(\\d+)\\s+([\\w.]+)\\s
 
 // parse server by full pattern
 func parseServerFull(s string) *server {
-	sm := fullPtn.FindStringSubmatch(s)
-	if len(sm) == 0 || len(sm) != 6 {
+	//sm := fullPtn.FindStringSubmatch(s)
+	sm := strings.Split(s, " ")
+	if len(sm) == 0 || len(sm) != 7 {
 		return nil
 	}
 	return &server{
-		env:  sm[1],
-		host: sm[2],
-		port: sm[3],
-		user: sm[4],
-		desc: sm[5],
+		env:       sm[0],
+		host_type: sm[1],
+		host_name: sm[2],
+		ip:        sm[3],
+		port:      sm[4],
+		user:      sm[5],
+		desc:      sm[6],
 	}
 }
 
@@ -89,15 +102,18 @@ var simpPtn = regexp.MustCompile("^(\\w+)\\s+([\\w.]+)\\s+(.*)$")
 
 // parse server by simple pattern
 func parseServerSimp(s string) *server {
-	sm := simpPtn.FindStringSubmatch(s)
+	//sm := simpPtn.FindStringSubmatch(s)
+	sm := strings.Split(s, " ")
 	if len(sm) == 0 || len(sm) != 4 {
 		return nil
 	}
 	return &server{
-		env:  sm[1],
-		host: sm[2],
-		port: "",
-		user: "",
-		desc: sm[3],
+		env:       sm[0],
+		host_type: sm[1],
+		host_name: sm[2],
+		ip:        sm[3],
+		port:      "",
+		user:      "centos",
+		//desc:      sm[4],
 	}
 }

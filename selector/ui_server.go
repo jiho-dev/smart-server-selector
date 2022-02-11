@@ -1,10 +1,21 @@
 package selector
 
 import (
-	"github.com/gdamore/tcell"
-	"github.com/rivo/tview"
 	"sort"
 	"strings"
+
+	"github.com/gdamore/tcell"
+	"github.com/rivo/tview"
+)
+
+const (
+	MATCH_USER int = 1 << iota
+	MATCH_PORT
+	MATCH_DESC
+	MATCH_IP
+	MATCH_HOST_NAME
+	MATCH_HOST_TYPE
+	MATCH_ENV
 )
 
 type ServerUI struct {
@@ -69,31 +80,61 @@ func (s *ServerUI) flushVisible() {
 		}
 		kws = append(kws, kw)
 	}
+
+	var matched int
 	var result []server
 	for _, server := range s.all {
 		server.score = 0
 		for _, kw := range kws {
 			kw = strings.ToLower(kw)
 			if strings.Contains(strings.ToLower(server.env), kw) {
-				server.score += 1000
+				//server.score += 1000
+				server.score |= MATCH_ENV
+				matched |= MATCH_ENV
 			}
-			if strings.Contains(strings.ToLower(server.host), kw) {
-				server.score += 300
+			if strings.Contains(strings.ToLower(server.host_type), kw) {
+				//server.score += 500
+				server.score |= MATCH_HOST_TYPE
+				matched |= MATCH_HOST_TYPE
+			}
+			if strings.Contains(strings.ToLower(server.host_name), kw) {
+				//server.score += 300
+				server.score |= MATCH_HOST_NAME
+			}
+			if strings.Contains(strings.ToLower(server.ip), kw) {
+				//server.score += 200
+				server.score |= MATCH_IP
 			}
 			if strings.Contains(strings.ToLower(server.desc), kw) {
-				server.score += 100
+				//server.score += 100
+				server.score |= MATCH_DESC
 			}
 			if strings.Contains(strings.ToLower(server.port), kw) {
-				server.score += 10
+				//server.score += 10
+				server.score |= MATCH_PORT
 			}
 			if strings.Contains(strings.ToLower(server.user), kw) {
-				server.score += 1
+				//server.score += 1
+				server.score |= MATCH_USER
 			}
 		}
+
 		if server.score > 0 || len(kws) == 0 {
 			result = append(result, server)
 		}
 	}
+
+	if matched > 0 {
+		var ret1 []server
+		for _, s := range result {
+			if (s.score & matched) == matched {
+				ret1 = append(ret1, s)
+			}
+		}
+
+		result = ret1
+	}
+
 	sort.Sort(serverArray(result))
 
 	s.visible = result

@@ -1,0 +1,129 @@
+# github.com/apenella/go-ansible v1.1.4
+github.com/apenella/go-ansible/pkg/execute
+github.com/apenella/go-ansible/pkg/options
+github.com/apenella/go-ansible/pkg/playbook
+github.com/apenella/go-ansible/pkg/stdoutcallback
+github.com/apenella/go-ansible/pkg/stdoutcallback/results
+# github.com/apenella/go-common-utils/data v0.0.0-20210528133155-34ba915e28c8
+github.com/apenella/go-common-utils/data
+# github.com/apenella/go-common-utils/error v0.0.0-20210528133155-34ba915e28c8
+github.com/apenella/go-common-utils/error
+# github.com/fsnotify/fsnotify v1.5.1
+github.com/fsnotify/fsnotify
+# github.com/gdamore/encoding v1.0.0
+github.com/gdamore/encoding
+# github.com/gdamore/tcell v1.4.0
+github.com/gdamore/tcell
+github.com/gdamore/tcell/terminfo
+github.com/gdamore/tcell/terminfo/a/adm3a
+github.com/gdamore/tcell/terminfo/a/aixterm
+github.com/gdamore/tcell/terminfo/a/alacritty
+github.com/gdamore/tcell/terminfo/a/ansi
+github.com/gdamore/tcell/terminfo/a/aterm
+github.com/gdamore/tcell/terminfo/b/beterm
+github.com/gdamore/tcell/terminfo/b/bsdos_pc
+github.com/gdamore/tcell/terminfo/base
+github.com/gdamore/tcell/terminfo/c/cygwin
+github.com/gdamore/tcell/terminfo/d/d200
+github.com/gdamore/tcell/terminfo/d/d210
+github.com/gdamore/tcell/terminfo/d/dtterm
+github.com/gdamore/tcell/terminfo/dynamic
+github.com/gdamore/tcell/terminfo/e/emacs
+github.com/gdamore/tcell/terminfo/e/eterm
+github.com/gdamore/tcell/terminfo/extended
+github.com/gdamore/tcell/terminfo/g/gnome
+github.com/gdamore/tcell/terminfo/h/hpterm
+github.com/gdamore/tcell/terminfo/h/hz1500
+github.com/gdamore/tcell/terminfo/k/konsole
+github.com/gdamore/tcell/terminfo/k/kterm
+github.com/gdamore/tcell/terminfo/l/linux
+github.com/gdamore/tcell/terminfo/p/pcansi
+github.com/gdamore/tcell/terminfo/r/rxvt
+github.com/gdamore/tcell/terminfo/s/screen
+github.com/gdamore/tcell/terminfo/s/simpleterm
+github.com/gdamore/tcell/terminfo/s/sun
+github.com/gdamore/tcell/terminfo/t/termite
+github.com/gdamore/tcell/terminfo/t/tvi910
+github.com/gdamore/tcell/terminfo/t/tvi912
+github.com/gdamore/tcell/terminfo/t/tvi921
+github.com/gdamore/tcell/terminfo/t/tvi925
+github.com/gdamore/tcell/terminfo/t/tvi950
+github.com/gdamore/tcell/terminfo/t/tvi970
+github.com/gdamore/tcell/terminfo/v/vt100
+github.com/gdamore/tcell/terminfo/v/vt102
+github.com/gdamore/tcell/terminfo/v/vt220
+github.com/gdamore/tcell/terminfo/v/vt320
+github.com/gdamore/tcell/terminfo/v/vt400
+github.com/gdamore/tcell/terminfo/v/vt420
+github.com/gdamore/tcell/terminfo/v/vt52
+github.com/gdamore/tcell/terminfo/w/wy50
+github.com/gdamore/tcell/terminfo/w/wy60
+github.com/gdamore/tcell/terminfo/w/wy99_ansi
+github.com/gdamore/tcell/terminfo/x/xfce
+github.com/gdamore/tcell/terminfo/x/xnuppc
+github.com/gdamore/tcell/terminfo/x/xterm
+github.com/gdamore/tcell/terminfo/x/xterm_kitty
+# github.com/hashicorp/hcl v1.0.0
+github.com/hashicorp/hcl
+github.com/hashicorp/hcl/hcl/ast
+github.com/hashicorp/hcl/hcl/parser
+github.com/hashicorp/hcl/hcl/printer
+github.com/hashicorp/hcl/hcl/scanner
+github.com/hashicorp/hcl/hcl/strconv
+github.com/hashicorp/hcl/hcl/token
+github.com/hashicorp/hcl/json/parser
+github.com/hashicorp/hcl/json/scanner
+github.com/hashicorp/hcl/json/token
+# github.com/inconshreveable/mousetrap v1.0.0
+github.com/inconshreveable/mousetrap
+# github.com/lucasb-eyer/go-colorful v1.0.3
+github.com/lucasb-eyer/go-colorful
+# github.com/magiconair/properties v1.8.5
+github.com/magiconair/properties
+# github.com/mattn/go-runewidth v0.0.9
+github.com/mattn/go-runewidth
+# github.com/mitchellh/mapstructure v1.4.3
+github.com/mitchellh/mapstructure
+# github.com/pelletier/go-toml v1.9.4
+github.com/pelletier/go-toml
+# github.com/pkg/errors v0.9.1
+github.com/pkg/errors
+# github.com/rivo/tview v0.0.0-20190515161233-bd836ef13b4b
+github.com/rivo/tview
+# github.com/rivo/uniseg v0.0.0-20190513083848-b9f5b9457d44
+github.com/rivo/uniseg
+# github.com/sirupsen/logrus v1.8.1
+github.com/sirupsen/logrus
+# github.com/spf13/afero v1.6.0
+github.com/spf13/afero
+github.com/spf13/afero/mem
+# github.com/spf13/cast v1.4.1
+github.com/spf13/cast
+# github.com/spf13/cobra v1.3.0
+github.com/spf13/cobra
+# github.com/spf13/jwalterweatherman v1.1.0
+github.com/spf13/jwalterweatherman
+# github.com/spf13/pflag v1.0.5
+github.com/spf13/pflag
+# github.com/spf13/viper v1.10.1
+github.com/spf13/viper
+github.com/spf13/viper/internal/encoding
+github.com/spf13/viper/internal/encoding/hcl
+github.com/spf13/viper/internal/encoding/json
+github.com/spf13/viper/internal/encoding/toml
+github.com/spf13/viper/internal/encoding/yaml
+# github.com/subosito/gotenv v1.2.0
+github.com/subosito/gotenv
+# golang.org/x/sys v0.0.0-20211210111614-af8b64212486
+golang.org/x/sys/internal/unsafeheader
+golang.org/x/sys/unix
+golang.org/x/sys/windows
+# golang.org/x/text v0.3.7
+golang.org/x/text/encoding
+golang.org/x/text/encoding/internal/identifier
+golang.org/x/text/transform
+golang.org/x/text/unicode/norm
+# gopkg.in/ini.v1 v1.66.2
+gopkg.in/ini.v1
+# gopkg.in/yaml.v2 v2.4.0
+gopkg.in/yaml.v2
