@@ -26,10 +26,9 @@ func init() {
 
 func connectHost(cmd *cobra.Command, args []string) {
 	hostFile := viper.GetString(KeyHostFile)
-	key1 := viper.GetString(KeySshKeyFile1)
-	key2 := viper.GetString(KeySshKeyFile2)
-	key3 := viper.GetString(KeySshKeyFile3)
-	key4 := viper.GetString(KeySshKeyFile4)
+	sshKeyFile := GetConfig(KeySshKeyFile)
+	userName := GetConfig(KeyUserName)
+	sshPort := GetConfig(KeySshPort)
 
 	var host string
 	if len(args) > 0 {
@@ -38,15 +37,12 @@ func connectHost(cmd *cobra.Command, args []string) {
 
 	cfg := selector.SshConfig{
 		HostFile: hostFile,
-		KeyFile: map[string]string{
-			"dev2":  key1,
-			"stg2":  key2,
-			"ppd2":  key3,
-			"spceu": key4,
-		},
+		KeyFile:  sshKeyFile,
+		UserName: userName,
+		SshPort:  sshPort,
 	}
 
-	err := selector.StartSSHExt(cfg, host)
+	err := selector.StartSSHExt(&cfg, host)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 		os.Exit(1)

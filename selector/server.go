@@ -1,9 +1,9 @@
 package selector
 
 import (
+	"encoding/csv"
 	"fmt"
 	"io/ioutil"
-	"regexp"
 	"strings"
 )
 
@@ -44,9 +44,9 @@ func (a serverArray) Less(i, j int) bool {
 }
 
 // load servers from config file.
-func loadServers(cfg string) (arr []server) {
+func loadServers(sshCfg *SshConfig) (arr []server) {
 	arr = make([]server, 0)
-	fs, _ := ioutil.ReadFile(cfg)
+	fs, _ := ioutil.ReadFile(sshCfg.HostFile)
 	if len(fs) == 0 {
 		return
 	}
@@ -58,9 +58,11 @@ func loadServers(cfg string) (arr []server) {
 			continue
 		}
 		s := parseServerFull(line)
-		if s == nil {
-			s = parseServerSimp(line)
-		}
+		/*
+			if s == nil {
+				s = parseServerSimp(line)
+			}
+		*/
 		if s != nil {
 			arr = append(arr, *s)
 		} else {
@@ -78,42 +80,91 @@ func loadServers(cfg string) (arr []server) {
 	return
 }
 
-var fullPtn = regexp.MustCompile("^(\\w+)\\s+([\\w.]+)\\s+(\\d+)\\s+([\\w.]+)\\s+(.*)$")
+func replaceDash(sm []string) []string {
+	for i, s := range sm {
+		if s == "-" {
+			sm[i] = ""
+		}
+	}
+
+	return sm
+}
+
+//var fullPtn = regexp.MustCompile("^(\\w+)\\s+([\\w.]+)\\s+(\\d+)\\s+([\\w.]+)\\s+(.*)$")
 
 // parse server by full pattern
 func parseServerFull(s string) *server {
 	//sm := fullPtn.FindStringSubmatch(s)
-	sm := strings.Split(s, " ")
-	if len(sm) == 0 || len(sm) != 7 {
+	r := csv.NewReader(strings.NewReader(s))
+	r.Comma = ' '
+	sm, err := r.Read()
+	if err != nil {
 		return nil
 	}
-	return &server{
+
+	l := len(sm)
+	if l == 0 || l < 4 {
+		return nil
+	}
+
+	sm = replaceDash(sm)
+
+	svr := &server{
 		env:       sm[0],
 		host_type: sm[1],
 		host_name: sm[2],
 		ip:        sm[3],
-		port:      sm[4],
-		user:      sm[5],
-		desc:      sm[6],
 	}
+
+	// only desc
+	if l == 5 {
+		svr.desc = sm[4]
+		return svr
+	}
+
+	// full
+	if l > 4 && sm[4] != "" {
+		svr.port = sm[4]
+	}
+
+	if l > 5 && sm[5] != "" {
+		svr.user = sm[5]
+	}
+
+	if l > 6 && sm[6] != "" {
+		svr.desc = sm[6]
+	}
+
+	return svr
 }
 
-var simpPtn = regexp.MustCompile("^(\\w+)\\s+([\\w.]+)\\s+(.*)$")
+/*
+//var simpPtn = regexp.MustCompile("^(\\w+)\\s+([\\w.]+)\\s+(.*)$")
 
 // parse server by simple pattern
 func parseServerSimp(s string) *server {
 	//sm := simpPtn.FindStringSubmatch(s)
 	sm := strings.Split(s, " ")
-	if len(sm) == 0 || len(sm) != 4 {
+	l := len(sm)
+
+	if l == 0 || l < 4 {
 		return nil
 	}
-	return &server{
+
+	sm = replaceDash(sm)
+	//desc := getDesc(sm, 4)
+
+	svr := &server{
 		env:       sm[0],
 		host_type: sm[1],
 		host_name: sm[2],
 		ip:        sm[3],
-		port:      "",
-		user:      "centos",
-		//desc:      sm[4],
 	}
+
+	if l > 4 && sm[4] != "" {
+		svr.desc = sm[4]
+	}
+
+	return svr
 }
+*/

@@ -39,7 +39,7 @@ func newRow() *row {
 	r.flex.AddItem(r.env, 7, 1, false)
 	r.flex.AddItem(r.host_type, 12, 1, false)
 	r.flex.AddItem(r.host_name, 20, 1, false)
-	r.flex.AddItem(r.ip, 15, 1, false)
+	r.flex.AddItem(r.ip, 30, 1, false)
 	r.flex.AddItem(r.desc, 0, 10, false)
 	//r.flex.AddItem(r.score, 0, 10, false)
 
@@ -67,17 +67,16 @@ func (r *row) render(s *server, selected bool, kws []string) {
 		host_type = s.host_type
 		host_name = s.host_name
 		ip = s.ip
+		desc = s.desc
+
 		//score = fmt.Sprintf("%d", s.score)
-		/*
-			host = s.ip
-			desc = s.desc
-			if len(s.user) > 0 {
-				host = s.user + "@" + s.ip
-			}
-			if len(s.port) > 0 {
-				host = host + ":" + s.port
-			}
-		*/
+		desc = s.desc
+		if len(s.user) > 0 {
+			ip = s.user + "@" + s.ip
+		}
+		if len(s.port) > 0 {
+			ip = ip + ":" + s.port
+		}
 	}
 	r.env.SetText(highlight(env, kws))
 	r.host_type.SetText(highlight(host_type, kws))

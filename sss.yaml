@@ -1,8 +1,22 @@
 
 ---
+host-file: "/home/jiho.jung/.ssh/sss-host.cfg"
 
-#host-file: "/home/jiho.jung/.ssh/spc-host.cfg"
-ssh-key-file1: "/home/jiho.jung/ssh-keys/labeu-dev2-private.priv"
-ssh-key-file2: "/home/jiho.jung/ssh-keys/labeu-dev2-private.priv"
-ssh-key-file3: "/home/jiho.jung/ssh-keys/labeu-dev2-private.priv"
-ssh-key-file4: "/home/jiho.jung/ssh-keys/spc-eu.pem"
+ssh-port: 
+  - "dev2": "22"
+  - "stg2": "22"
+  - "ppd2": "22"
+
+user-name: 
+  - "dev2": "centos"
+  - "stg2": "centos"
+  - "ppd2": "centos"
+  - "spceu": "centos"
+  - "dev2-vm": "centos"
+  - "stg2-vm": "ubuntu"
+
+ssh-key: 
+  - "dev2" : "/home/jiho.jung/ssh-keys/labeu-dev2-private.priv"
+  - "stg2" : "/home/jiho.jung/ssh-keys/labeu-dev2-private.priv"
+  - "ppd2" : "/home/jiho.jung/ssh-keys/labeu-dev2-private.priv"
+  - "spceu": "/home/jiho.jung/ssh-keys/spc-eu.pem"

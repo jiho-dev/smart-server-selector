@@ -12,21 +12,23 @@ import (
 
 type SshConfig struct {
 	HostFile  string
-	KeyFile   map[string]string // key: env, data: ssh key file
 	SearchKey string
+	KeyFile   map[string]string // key: env, data: ssh key file
+	SshPort   map[string]string // key: env, data: ssh port
+	UserName  map[string]string // key: env, data: user name
 }
 
 var exited bool
 var app *tview.Application
 var view *ServerUI
-var cfg SshConfig
+var cfg *SshConfig
 
 // Start the selector's render loop
-func Start(sshCfg SshConfig, show_about bool, a *tview.Application) {
+func Start(sshCfg *SshConfig, show_about bool, a *tview.Application) {
 	app = a
 
 	cfg = sshCfg
-	server := loadServers(cfg.HostFile)
+	server := loadServers(sshCfg)
 	view = newServersUI(server)
 
 	topFlex := tview.NewFlex().SetDirection(tview.FlexColumn)
@@ -75,7 +77,7 @@ func onKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 func startVim() {
 	app.Suspend(func() {
 		execute("vim", SssFile)
-		view.setServers(loadServers(cfg.HostFile)) // reload
+		view.setServers(loadServers(cfg)) // reload
 	})
 }
 
@@ -92,20 +94,7 @@ func startSSH() {
 			return
 		}
 
-		var cmds []string
-		if len(s.port) > 0 {
-			cmds = append(cmds, "-p"+s.port)
-		}
-		if len(s.user) > 0 {
-			cmds = append(cmds, s.user+"@"+s.ip)
-		} else {
-			cmds = append(cmds, s.ip)
-		}
-
-		cmds = append(cmds, "-i"+k)
-
-		execute("ssh", cmds...)
-
+		execSSH(cfg, &s)
 		// XXX: stop selector menu
 		app.Stop()
 	})
@@ -135,8 +124,8 @@ func execute(name string, args ...string) {
 	}
 }
 
-func StartSSHExt(sshCfg SshConfig, key string) error {
-	serverList := loadServers(sshCfg.HostFile)
+func StartSSHExt(sshCfg *SshConfig, key string) error {
+	serverList := loadServers(sshCfg)
 	kw := strings.ToLower(key)
 	var server *server
 
@@ -154,17 +143,34 @@ func StartSSHExt(sshCfg SshConfig, key string) error {
 		return fmt.Errorf("Not server to connect: %s", key)
 	}
 
+	return execSSH(sshCfg, server)
+}
+
+func execSSH(sshCfg *SshConfig, server *server) error {
+	if server == nil {
+		return fmt.Errorf("server is empty")
+	}
+
 	k, ok := sshCfg.KeyFile[server.env]
 	if !ok || k == "" {
 		return fmt.Errorf("no SSH Key file: %s %s(%s) \n", server.env, server.host_name, server.ip)
 	}
 
-	var cmds []string
+	defPort, _ := sshCfg.SshPort[server.env]
 	if len(server.port) > 0 {
-		cmds = append(cmds, "-p"+server.port)
+		defPort = server.port
 	}
+
+	defUser, _ := sshCfg.UserName[server.env]
 	if len(server.user) > 0 {
-		cmds = append(cmds, server.user+"@"+server.ip)
+		defUser = server.user
+	}
+
+	var cmds []string
+	cmds = append(cmds, "-p"+defPort)
+
+	if len(defUser) > 0 {
+		cmds = append(cmds, defUser+"@"+server.ip)
 	} else {
 		cmds = append(cmds, server.ip)
 	}

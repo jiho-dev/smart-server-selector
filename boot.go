@@ -16,15 +16,14 @@ import (
 )
 
 var (
-	KeyConfigFile  = "config"
-	KeyConfigDir   = "config-dir"
-	KeyHostFile    = "host-file"
-	KeyShowAbout   = "show-about"
-	KeySshKeyFile1 = "ssh-key-file1"
-	KeySshKeyFile2 = "ssh-key-file2"
-	KeySshKeyFile3 = "ssh-key-file3"
-	KeySshKeyFile4 = "ssh-key-file4"
-	KeyVerbose     = "verbose"
+	KeyConfigFile = "config"
+	KeyConfigDir  = "config-dir"
+	KeyHostFile   = "host-file"
+	KeyShowAbout  = "show-about"
+	KeySshKeyFile = "ssh-key"
+	KeyUserName   = "user-name"
+	KeySshPort    = "ssh-port"
+	KeyVerbose    = "verbose"
 )
 
 var rootCmd = &cobra.Command{
@@ -71,8 +70,8 @@ func init() {
 		//log.NewLogger(logConfig)
 		log.SetFormatter(&log.JSONFormatter{})
 
-		// show all configs
 		/*
+			// show all configs
 			keys := viper.AllKeys()
 			sort.Strings(keys)
 			for _, key := range keys {
@@ -89,10 +88,7 @@ func init() {
 	rootCmd.PersistentFlags().String(KeyConfigDir, "", "configure directory")
 	rootCmd.PersistentFlags().String(KeyHostFile, hostFile, "Host List File")
 	rootCmd.PersistentFlags().Bool(KeyShowAbout, false, "Show About Menu")
-	rootCmd.PersistentFlags().String(KeySshKeyFile1, "", "SSH Key File1")
-	rootCmd.PersistentFlags().String(KeySshKeyFile2, "", "SSH Key File2")
-	rootCmd.PersistentFlags().String(KeySshKeyFile3, "", "SSH Key File3")
-	rootCmd.PersistentFlags().String(KeySshKeyFile4, "", "SSH Key File4")
+	rootCmd.PersistentFlags().String(KeySshKeyFile, "", "SSH Key File1")
 
 	if err := viper.BindPFlags(rootCmd.PersistentFlags()); err != nil {
 		log.Errorf("failed to bind flags: %v", err)
@@ -116,15 +112,35 @@ func readConfig() error {
 
 /////////////////////////
 
+func GetConfig(key string) map[string]string {
+	values := map[string]string{}
+
+	vals := viper.Get(key)
+	val, ok := vals.([]interface{})
+	if ok {
+		for _, val2 := range val {
+			val3, ok3 := val2.(map[interface{}]interface{})
+			if ok3 {
+				for key4, val4 := range val3 {
+					k := key4.(string)
+					v := val4.(string)
+					values[k] = v
+				}
+			}
+		}
+	}
+
+	return values
+}
+
 func Main(cmd *cobra.Command, args []string) {
 	runewidth.DefaultCondition.EastAsianWidth = false
 	app := tview.NewApplication()
 
 	hostFile := viper.GetString(KeyHostFile)
-	key1 := viper.GetString(KeySshKeyFile1)
-	key2 := viper.GetString(KeySshKeyFile2)
-	key3 := viper.GetString(KeySshKeyFile3)
-	key4 := viper.GetString(KeySshKeyFile4)
+	sshKeyFile := GetConfig(KeySshKeyFile)
+	userName := GetConfig(KeyUserName)
+	sshPort := GetConfig(KeySshPort)
 
 	var skey string
 	if len(args) > 0 {
@@ -135,15 +151,12 @@ func Main(cmd *cobra.Command, args []string) {
 	cfg := selector.SshConfig{
 		SearchKey: skey,
 		HostFile:  hostFile,
-		KeyFile: map[string]string{
-			"dev2":  key1,
-			"stg2":  key2,
-			"ppd2":  key3,
-			"spceu": key4,
-		},
+		KeyFile:   sshKeyFile,
+		UserName:  userName,
+		SshPort:   sshPort,
 	}
 
-	selector.Start(cfg, showAbout, app)
+	selector.Start(&cfg, showAbout, app)
 
 	if err := app.Run(); err != nil {
 		fmt.Printf("%v\n", err)
