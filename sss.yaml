@@ -1,5 +1,8 @@
 
 ---
 
-host-file: "/home/jiho.jung/src/jiho-dev/smart-server-selector/host.cfg"
+#host-file: "/home/jiho.jung/.ssh/spc-host.cfg"
 ssh-key-file1: "/home/jiho.jung/ssh-keys/labeu-dev2-private.priv"
+ssh-key-file2: "/home/jiho.jung/ssh-keys/labeu-dev2-private.priv"
+ssh-key-file3: "/home/jiho.jung/ssh-keys/labeu-dev2-private.priv"
+ssh-key-file4: "/home/jiho.jung/ssh-keys/spc-eu.pem"

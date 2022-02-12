@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path"
 	"strings"
 
 	"github.com/mattn/go-runewidth"
@@ -18,6 +19,7 @@ var (
 	KeyConfigFile  = "config"
 	KeyConfigDir   = "config-dir"
 	KeyHostFile    = "host-file"
+	KeyShowAbout   = "show-about"
 	KeySshKeyFile1 = "ssh-key-file1"
 	KeySshKeyFile2 = "ssh-key-file2"
 	KeySshKeyFile3 = "ssh-key-file3"
@@ -35,9 +37,10 @@ var rootCmd = &cobra.Command{
 }
 
 var menu = &cobra.Command{
-	Use:   "menu",
-	Short: "Run Flowlogger Service ",
-	Run:   Main,
+	Use:     "menu",
+	Aliases: []string{"m", "me", "men"},
+	Short:   "Show host selector",
+	Run:     Main,
 }
 
 ////////////////////////////////
@@ -78,9 +81,14 @@ func init() {
 		*/
 	})
 
-	rootCmd.PersistentFlags().String(KeyConfigFile, "", "config file")
+	homeDir, _ := os.UserHomeDir()
+	cfgFile := path.Join(homeDir, ".ssh", "sss.yaml")
+	hostFile := path.Join(homeDir, ".ssh", "sss-host.cfg")
+
+	rootCmd.PersistentFlags().String(KeyConfigFile, cfgFile, "config file")
 	rootCmd.PersistentFlags().String(KeyConfigDir, "", "configure directory")
-	rootCmd.PersistentFlags().String(KeyHostFile, "", "Host List File")
+	rootCmd.PersistentFlags().String(KeyHostFile, hostFile, "Host List File")
+	rootCmd.PersistentFlags().Bool(KeyShowAbout, false, "Show About Menu")
 	rootCmd.PersistentFlags().String(KeySshKeyFile1, "", "SSH Key File1")
 	rootCmd.PersistentFlags().String(KeySshKeyFile2, "", "SSH Key File2")
 	rootCmd.PersistentFlags().String(KeySshKeyFile3, "", "SSH Key File3")
@@ -123,7 +131,7 @@ func Main(cmd *cobra.Command, args []string) {
 		skey = strings.Join(args, " ")
 	}
 
-	var showAbout bool = false
+	showAbout := viper.GetBool(KeyShowAbout)
 	cfg := selector.SshConfig{
 		SearchKey: skey,
 		HostFile:  hostFile,

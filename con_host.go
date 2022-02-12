@@ -10,9 +10,10 @@ import (
 )
 
 var conHostCmd = &cobra.Command{
-	Use:   "con",
-	Short: "Connect Host directly ",
-	Run:   connectHost,
+	Use:     "connect",
+	Aliases: []string{"c", "con", "conn"},
+	Short:   "Connect Host directly ",
+	Run:     connectHost,
 }
 
 ////////////////////////////////
