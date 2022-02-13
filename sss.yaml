@@ -1,6 +1,9 @@
 
 ---
-host-file: "/home/jiho.jung/.ssh/sss-host.cfg"
+#host-file: "/home/jiho.jung/.ssh/sss-host.cfg"
+
+show-about: false
+show-badge: true
 
 ssh-port: 
   - "dev2": "22"
