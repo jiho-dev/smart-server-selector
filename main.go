@@ -17,18 +17,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Long: `sss - smart-server-selector`,
-	Run: func(cmd *cobra.Command, args []string) {
-		_ = cmd.Help()
-		//os.Exit(1)
-		//Main(cmd, args)
-	},
-}
-
-var menu = &cobra.Command{
-	Use:     "menu",
-	Aliases: []string{"m", "me", "men"},
-	Short:   "Show host selector",
-	Run:     Main,
+	Run:  Main,
 }
 
 ////////////////////////////////
@@ -85,8 +74,6 @@ func init() {
 	if err := viper.BindPFlags(rootCmd.PersistentFlags()); err != nil {
 		log.Errorf("failed to bind flags: %v", err)
 	}
-
-	rootCmd.AddCommand(menu)
 }
 
 func readConfig() error {
@@ -105,19 +92,29 @@ func readConfig() error {
 /////////////////////////
 
 func Main(cmd *cobra.Command, args []string) {
-	runewidth.DefaultCondition.EastAsianWidth = false
-	app := tview.NewApplication()
-
 	var skey string
 	if len(args) > 0 {
 		skey = strings.Join(args, " ")
 	}
 
 	cfg := selector.GetConfig()
-	selector.Start(cfg, skey, app)
+	servers := selector.LoadServers(cfg)
+	var idx int = -1
 
-	if err := app.Run(); err != nil {
-		fmt.Printf("%v\n", err)
-		os.Exit(1)
+	if len(args) == 1 {
+		idx = selector.SearchServers(args[0], servers)
+	}
+
+	if idx != -1 {
+		selector.ExecSSH(cfg, &servers[idx])
+	} else {
+		runewidth.DefaultCondition.EastAsianWidth = false
+		app := tview.NewApplication()
+		selector.Start(cfg, skey, servers, app)
+
+		if err := app.Run(); err != nil {
+			fmt.Printf("%v\n", err)
+			os.Exit(1)
+		}
 	}
 }

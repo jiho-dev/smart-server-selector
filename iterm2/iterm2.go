@@ -56,19 +56,33 @@ func PrintImage(filename string) error {
 	return nil
 }
 
-func PrintBadge(msg string) error {
+func PrintControlSequence(key, val string) {
+
+	PrintOSC()
+
+	b64 := base64.StdEncoding.EncodeToString([]byte(val))
+	fmt.Printf("1337;%s=%s", key, b64)
+
+	PrintST()
+}
+
+func PrintBadge(msg string) {
 	/*
 		# Set badge to show the current session name and git branch, if any is set.
 		printf "\e]1337;SetBadgeFormat=%s\a" \
 		  $(echo -n "\(session.name) \(user.gitBranch)" | base64)
 	*/
 
-	PrintOSC()
+	PrintControlSequence("SetBadgeFormat", msg)
+}
 
-	fmt.Printf("1337;SetBadgeFormat=")
-	fmt.Printf("%s", base64.StdEncoding.EncodeToString([]byte(msg)))
+func PrintRemoteHostName(name string) {
+	//printf "\e]1337;SetUserVar=%s=%s\a" hostname $(echo -n ${_iterm2_hostname} | base64 -w0)
 
-	PrintST()
+	PrintControlSequence("SetUserVar=remote_hostname", name)
+}
 
-	return nil
+func PrintPath(path string) {
+	//printf "\e]1337;SetUserVar=%s=%s\a" path $(echo -n $(pwd) | base64 -w0)
+	PrintControlSequence("SetUserVar=path", path)
 }

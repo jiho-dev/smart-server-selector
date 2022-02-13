@@ -1,10 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"os"
-
-	"github.com/sisyphsu/smart-server-selector/selector"
 	"github.com/spf13/cobra"
 )
 
@@ -18,23 +14,24 @@ var conHostCmd = &cobra.Command{
 ////////////////////////////////
 
 func init() {
-	rootCmd.AddCommand(conHostCmd)
+	//rootCmd.AddCommand(conHostCmd)
 }
 
 /////////////////////////
 
 func connectHost(cmd *cobra.Command, args []string) {
-	var host string
-	if len(args) > 0 {
-		host = args[0]
-	}
+	/*
+		var host string
+		if len(args) > 0 {
+			host = args[0]
+		}
 
-	cfg := selector.GetConfig()
+		cfg := selector.GetConfig()
 
-	err := selector.StartSSHExt(cfg, host)
-	if err != nil {
-		fmt.Printf("%v\n", err)
-		os.Exit(1)
-	}
-
+		err := selector.StartSSHExt(cfg, host)
+		if err != nil {
+			fmt.Printf("%v\n", err)
+			os.Exit(1)
+		}
+	*/
 }

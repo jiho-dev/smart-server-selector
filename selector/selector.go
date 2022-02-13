@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
@@ -16,11 +15,11 @@ var app *tview.Application
 var view *ServerUI
 
 // Start the selector's render loop
-func Start(sssCfg *SssConfig, searchKey string, a *tview.Application) {
+func Start(sssCfg *SssConfig, searchKey string, server []server, a *tview.Application) {
 	app = a
 
 	SssCfg = sssCfg
-	server := loadServers(sssCfg)
+	//server := LoadServers(sssCfg)
 	view = newServersUI(server)
 
 	topFlex := tview.NewFlex().SetDirection(tview.FlexColumn)
@@ -69,7 +68,7 @@ func onKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 func startVim() {
 	app.Suspend(func() {
 		execute("vim", SssCfg.HostFile)
-		view.setServers(loadServers(SssCfg)) // reload
+		view.setServers(LoadServers(SssCfg)) // reload
 	})
 }
 
@@ -86,7 +85,7 @@ func startSSH() {
 			return
 		}
 
-		execSSH(SssCfg, &s)
+		ExecSSH(SssCfg, &s)
 		// XXX: stop selector menu
 		app.Stop()
 	})
@@ -116,8 +115,9 @@ func execute(name string, args ...string) {
 	}
 }
 
+/*
 func StartSSHExt(sssCfg *SssConfig, key string) error {
-	serverList := loadServers(sssCfg)
+	serverList := LoadServers(sssCfg)
 	kw := strings.ToLower(key)
 	var server *server
 
@@ -135,10 +135,11 @@ func StartSSHExt(sssCfg *SssConfig, key string) error {
 		return fmt.Errorf("Not server to connect: %s", key)
 	}
 
-	return execSSH(sssCfg, server)
+	return ExecSSH(sssCfg, server)
 }
+*/
 
-func execSSH(sssCfg *SssConfig, server *server) error {
+func ExecSSH(sssCfg *SssConfig, server *server) error {
 	if server == nil {
 		return fmt.Errorf("server is empty")
 	}
@@ -172,12 +173,16 @@ func execSSH(sssCfg *SssConfig, server *server) error {
 		iterm2.PrintBadge(badge)
 	}
 
+	iterm2.PrintRemoteHostName(server.host_name)
+
 	cmds = append(cmds, "-i"+k)
 	execute("ssh", cmds...)
 
 	if sssCfg.ShowBadge {
 		iterm2.PrintBadge("")
 	}
+
+	iterm2.PrintRemoteHostName("")
 
 	return nil
 }

@@ -44,7 +44,7 @@ func (a serverArray) Less(i, j int) bool {
 }
 
 // load servers from config file.
-func loadServers(sssCfg *SssConfig) (arr []server) {
+func LoadServers(sssCfg *SssConfig) (arr []server) {
 	arr = make([]server, 0)
 	fs, _ := ioutil.ReadFile(sssCfg.HostFile)
 	if len(fs) == 0 {
@@ -78,6 +78,19 @@ func loadServers(sssCfg *SssConfig) (arr []server) {
 		getchar()
 	}
 	return
+}
+
+func SearchServers(name string, servers []server) int {
+	n := strings.ToLower(name)
+	for i, s := range servers {
+		if strings.ToLower(s.host_name) == n {
+			return i
+		} else if strings.ToLower(s.ip) == n {
+			return i
+		}
+	}
+
+	return -1
 }
 
 func replaceDash(sm []string) []string {
