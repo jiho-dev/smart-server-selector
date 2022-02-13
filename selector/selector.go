@@ -8,37 +8,29 @@ import (
 
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
+	"github.com/sisyphsu/smart-server-selector/iterm2"
 )
-
-type SshConfig struct {
-	HostFile  string
-	SearchKey string
-	KeyFile   map[string]string // key: env, data: ssh key file
-	SshPort   map[string]string // key: env, data: ssh port
-	UserName  map[string]string // key: env, data: user name
-}
 
 var exited bool
 var app *tview.Application
 var view *ServerUI
-var cfg *SshConfig
 
 // Start the selector's render loop
-func Start(sshCfg *SshConfig, show_about bool, a *tview.Application) {
+func Start(sssCfg *SssConfig, searchKey string, a *tview.Application) {
 	app = a
 
-	cfg = sshCfg
-	server := loadServers(sshCfg)
+	SssCfg = sssCfg
+	server := loadServers(sssCfg)
 	view = newServersUI(server)
 
 	topFlex := tview.NewFlex().SetDirection(tview.FlexColumn)
-	if show_about {
+	if sssCfg.ShowAbout {
 		topFlex.AddItem(buildAboutUI(), SidebarWidth, 0, false)
 	}
-	topFlex.AddItem(buildSearchUI(cfg.SearchKey), 0, 1, true)
+	topFlex.AddItem(buildSearchUI(searchKey), 0, 1, true)
 
 	btmFlex := tview.NewFlex().SetDirection(tview.FlexColumn)
-	if show_about {
+	if sssCfg.ShowAbout {
 		btmFlex.AddItem(buildTipsUI(), SidebarWidth, 0, false)
 	}
 	btmFlex.AddItem(view.flex, 0, 1, false)
@@ -76,8 +68,8 @@ func onKeyEvent(event *tcell.EventKey) *tcell.EventKey {
 // start vim subprocess
 func startVim() {
 	app.Suspend(func() {
-		execute("vim", SssFile)
-		view.setServers(loadServers(cfg)) // reload
+		execute("vim", SssCfg.HostFile)
+		view.setServers(loadServers(SssCfg)) // reload
 	})
 }
 
@@ -88,13 +80,13 @@ func startSSH() {
 	}
 	app.Suspend(func() {
 		s := view.visible[view.offset]
-		k, ok := cfg.KeyFile[s.env]
+		k, ok := SssCfg.KeyFile[s.env]
 		if !ok || k == "" {
 			fmt.Printf("no SSH Key file for %s \n", s.env)
 			return
 		}
 
-		execSSH(cfg, &s)
+		execSSH(SssCfg, &s)
 		// XXX: stop selector menu
 		app.Stop()
 	})
@@ -124,8 +116,8 @@ func execute(name string, args ...string) {
 	}
 }
 
-func StartSSHExt(sshCfg *SshConfig, key string) error {
-	serverList := loadServers(sshCfg)
+func StartSSHExt(sssCfg *SssConfig, key string) error {
+	serverList := loadServers(sssCfg)
 	kw := strings.ToLower(key)
 	var server *server
 
@@ -143,25 +135,25 @@ func StartSSHExt(sshCfg *SshConfig, key string) error {
 		return fmt.Errorf("Not server to connect: %s", key)
 	}
 
-	return execSSH(sshCfg, server)
+	return execSSH(sssCfg, server)
 }
 
-func execSSH(sshCfg *SshConfig, server *server) error {
+func execSSH(sssCfg *SssConfig, server *server) error {
 	if server == nil {
 		return fmt.Errorf("server is empty")
 	}
 
-	k, ok := sshCfg.KeyFile[server.env]
+	k, ok := sssCfg.KeyFile[server.env]
 	if !ok || k == "" {
 		return fmt.Errorf("no SSH Key file: %s %s(%s) \n", server.env, server.host_name, server.ip)
 	}
 
-	defPort, _ := sshCfg.SshPort[server.env]
+	defPort, _ := sssCfg.SshPort[server.env]
 	if len(server.port) > 0 {
 		defPort = server.port
 	}
 
-	defUser, _ := sshCfg.UserName[server.env]
+	defUser, _ := sssCfg.UserName[server.env]
 	if len(server.user) > 0 {
 		defUser = server.user
 	}
@@ -175,8 +167,17 @@ func execSSH(sshCfg *SshConfig, server *server) error {
 		cmds = append(cmds, server.ip)
 	}
 
+	if sssCfg.ShowBadge {
+		badge := server.host_name + ":" + server.ip
+		iterm2.PrintBadge(badge)
+	}
+
 	cmds = append(cmds, "-i"+k)
 	execute("ssh", cmds...)
+
+	if sssCfg.ShowBadge {
+		iterm2.PrintBadge("")
+	}
 
 	return nil
 }

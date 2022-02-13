@@ -6,7 +6,6 @@ import (
 
 	"github.com/sisyphsu/smart-server-selector/selector"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var conHostCmd = &cobra.Command{
@@ -25,24 +24,14 @@ func init() {
 /////////////////////////
 
 func connectHost(cmd *cobra.Command, args []string) {
-	hostFile := viper.GetString(KeyHostFile)
-	sshKeyFile := GetConfig(KeySshKeyFile)
-	userName := GetConfig(KeyUserName)
-	sshPort := GetConfig(KeySshPort)
-
 	var host string
 	if len(args) > 0 {
 		host = args[0]
 	}
 
-	cfg := selector.SshConfig{
-		HostFile: hostFile,
-		KeyFile:  sshKeyFile,
-		UserName: userName,
-		SshPort:  sshPort,
-	}
+	cfg := selector.GetConfig()
 
-	err := selector.StartSSHExt(&cfg, host)
+	err := selector.StartSSHExt(cfg, host)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 		os.Exit(1)

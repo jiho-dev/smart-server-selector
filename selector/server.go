@@ -44,9 +44,9 @@ func (a serverArray) Less(i, j int) bool {
 }
 
 // load servers from config file.
-func loadServers(sshCfg *SshConfig) (arr []server) {
+func loadServers(sssCfg *SssConfig) (arr []server) {
 	arr = make([]server, 0)
-	fs, _ := ioutil.ReadFile(sshCfg.HostFile)
+	fs, _ := ioutil.ReadFile(sssCfg.HostFile)
 	if len(fs) == 0 {
 		return
 	}
@@ -70,7 +70,7 @@ func loadServers(sshCfg *SshConfig) (arr []server) {
 		}
 	}
 	if len(errs) > 0 {
-		fmt.Printf("> some invalid config in file[%v]: \n", SssFile)
+		fmt.Printf("> some invalid config in file[%v]: \n", sssCfg.HostFile)
 		for i, e := range errs {
 			fmt.Printf("> %v: %v \n", i+1, e)
 		}
