@@ -1,13 +1,3 @@
-# github.com/apenella/go-ansible v1.1.4
-github.com/apenella/go-ansible/pkg/execute
-github.com/apenella/go-ansible/pkg/options
-github.com/apenella/go-ansible/pkg/playbook
-github.com/apenella/go-ansible/pkg/stdoutcallback
-github.com/apenella/go-ansible/pkg/stdoutcallback/results
-# github.com/apenella/go-common-utils/data v0.0.0-20210528133155-34ba915e28c8
-github.com/apenella/go-common-utils/data
-# github.com/apenella/go-common-utils/error v0.0.0-20210528133155-34ba915e28c8
-github.com/apenella/go-common-utils/error
 # github.com/fsnotify/fsnotify v1.5.1
 github.com/fsnotify/fsnotify
 # github.com/gdamore/encoding v1.0.0
