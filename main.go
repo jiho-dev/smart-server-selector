@@ -70,6 +70,7 @@ func init() {
 	rootCmd.PersistentFlags().String(selector.KeySshKeyFile, "", "SSH Key File")
 	rootCmd.PersistentFlags().String(selector.KeyUserName, "", "Default User Name")
 	rootCmd.PersistentFlags().String(selector.KeySshPort, "", "Default SSH Port")
+	rootCmd.PersistentFlags().String(selector.KeySshArgs, "", "Default SSH Args")
 
 	if err := viper.BindPFlags(rootCmd.PersistentFlags()); err != nil {
 		log.Errorf("failed to bind flags: %v", err)

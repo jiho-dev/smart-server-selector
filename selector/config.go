@@ -24,6 +24,7 @@ var (
 	KeySshKeyFile = "ssh-key"
 	KeyUserName   = "user-name"
 	KeySshPort    = "ssh-port"
+	KeySshArgs    = "ssh-args"
 )
 
 type SssConfig struct {
@@ -33,6 +34,7 @@ type SssConfig struct {
 	KeyFile   map[string]string // key: env, data: ssh key file
 	SshPort   map[string]string // key: env, data: ssh port
 	UserName  map[string]string // key: env, data: user name
+	SshArgs   string
 }
 
 var SssCfg *SssConfig
@@ -65,6 +67,7 @@ func GetConfig() *SssConfig {
 	sshPort := getConfigItem(KeySshPort)
 	showAbout := viper.GetBool(KeyShowAbout)
 	showBadge := viper.GetBool(KeyShowBadge)
+	sshArgs := viper.GetString(KeySshArgs)
 
 	cfg := &SssConfig{
 		HostFile:  hostFile,
@@ -73,6 +76,7 @@ func GetConfig() *SssConfig {
 		KeyFile:   sshKeyFile,
 		UserName:  userName,
 		SshPort:   sshPort,
+		SshArgs:   sshArgs,
 	}
 
 	return cfg

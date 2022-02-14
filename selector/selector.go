@@ -165,6 +165,10 @@ func ExecSSH(sssCfg *SssConfig, server *server) error {
 		cmds = append(cmds, "-p"+defPort)
 	}
 
+	if sssCfg.SshArgs != "" {
+		cmds = append(cmds, sssCfg.SshArgs)
+	}
+
 	if len(defUser) > 0 {
 		cmds = append(cmds, defUser+"@"+server.ip)
 	} else {
