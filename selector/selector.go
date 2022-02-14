@@ -160,7 +160,10 @@ func ExecSSH(sssCfg *SssConfig, server *server) error {
 	}
 
 	var cmds []string
-	cmds = append(cmds, "-p"+defPort)
+
+	if defPort != "" {
+		cmds = append(cmds, "-p"+defPort)
+	}
 
 	if len(defUser) > 0 {
 		cmds = append(cmds, defUser+"@"+server.ip)
