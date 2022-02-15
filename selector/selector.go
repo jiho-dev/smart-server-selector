@@ -180,6 +180,10 @@ func ExecSSH(sssCfg *SssConfig, server *server) error {
 		iterm2.PrintBadge(badge)
 	}
 
+	iterm2.PrintHostName()
+
+	iterm2.PrintTabTitle(server.host_name)
+	iterm2.PrintTabBGColor(255)
 	iterm2.PrintRemoteHostName(server.host_name)
 
 	cmds = append(cmds, "-i"+k)
@@ -190,6 +194,8 @@ func ExecSSH(sssCfg *SssConfig, server *server) error {
 	}
 
 	iterm2.PrintRemoteHostName("")
+	iterm2.PrintTabTitle("")
+	iterm2.PrintResetTabBGColor()
 
 	return nil
 }

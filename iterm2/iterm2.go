@@ -86,3 +86,32 @@ func PrintPath(path string) {
 	//printf "\e]1337;SetUserVar=%s=%s\a" path $(echo -n $(pwd) | base64 -w0)
 	PrintControlSequence("SetUserVar=path", path)
 }
+
+func PrintHostName() {
+	hostname, err := os.Hostname()
+	if err == nil && hostname != "" {
+		PrintControlSequence("SetUserVar=hostname", hostname)
+	}
+}
+
+func PrintTabTitle(title string) {
+	PrintOSC()
+	//fmt.Printf("0;%s", title)
+	fmt.Printf("0;%s", title)
+	PrintST()
+
+}
+
+func PrintTabBGColor(rgb int) {
+	PrintOSC()
+	//OSC 6 ; 1 ; bg ; red ; brightness ; [N] ST
+	fmt.Printf("6;1;bg;red;brightness;%d", rgb)
+	PrintST()
+}
+
+func PrintResetTabBGColor() {
+	PrintOSC()
+	// OSC 6 ; 1 ; bg ; * ; default ST
+	fmt.Printf("6;1;bg;*;default")
+	PrintST()
+}
