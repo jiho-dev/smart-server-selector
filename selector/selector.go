@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
 	"github.com/sisyphsu/smart-server-selector/iterm2"
+	"github.com/sisyphsu/smart-server-selector/ssh"
 )
 
 var exited bool
@@ -139,7 +141,8 @@ func StartSSHExt(sssCfg *SssConfig, key string) error {
 }
 */
 
-func ExecSSH(sssCfg *SssConfig, server *server) error {
+/*
+func ExecSSHOld(sssCfg *SssConfig, server *server) error {
 	if server == nil {
 		return fmt.Errorf("server is empty")
 	}
@@ -183,10 +186,30 @@ func ExecSSH(sssCfg *SssConfig, server *server) error {
 	iterm2.PrintHostName()
 
 	iterm2.PrintTabTitle(server.host_name)
-	iterm2.PrintTabBGColor(255)
+
+	var c *iterm2.RgbColor
+	switch server.host_type {
+	case "blackpearl":
+		c = &iterm2.RgbColor{
+			Red: 255,
+		}
+	case "vrouter":
+		c = &iterm2.RgbColor{
+			Blue: 255,
+		}
+
+	default:
+		c = &iterm2.RgbColor{
+			Green: 205,
+		}
+
+	}
+
+	iterm2.PrintTabBGColor(*c)
 	iterm2.PrintRemoteHostName(server.host_name)
 
 	cmds = append(cmds, "-i"+k)
+
 	execute("ssh", cmds...)
 
 	if sssCfg.ShowBadge {
@@ -196,6 +219,107 @@ func ExecSSH(sssCfg *SssConfig, server *server) error {
 	iterm2.PrintRemoteHostName("")
 	iterm2.PrintTabTitle("")
 	iterm2.PrintResetTabBGColor()
+
+	return nil
+}
+*/
+
+func SetIterm2Env(sssCfg *SssConfig, server *server) {
+	if sssCfg.ShowBadge {
+		badge := server.host_name + ":" + server.ip
+		iterm2.PrintBadge(badge)
+	}
+
+	iterm2.PrintHostName()
+	iterm2.PrintTabTitle(server.host_name)
+	iterm2.PrintRemoteHostName(server.host_name)
+
+	var c *iterm2.RgbColor
+	switch server.host_type {
+	case "blackpearl":
+		c = &iterm2.RgbColor{
+			Red: 255,
+		}
+	case "vrouter":
+		c = &iterm2.RgbColor{
+			Blue: 255,
+		}
+
+	default:
+		c = &iterm2.RgbColor{
+			Green: 205,
+		}
+
+	}
+
+	iterm2.PrintTabBGColor(*c)
+}
+
+func ResetIterm2Env(sssCfg *SssConfig) {
+	if sssCfg.ShowBadge {
+		iterm2.PrintBadge("")
+	}
+
+	iterm2.PrintRemoteHostName("")
+	iterm2.PrintTabTitle("")
+	iterm2.PrintResetTabBGColor()
+}
+
+func ExecSSH(sssCfg *SssConfig, server *server) error {
+	if server == nil {
+		return fmt.Errorf("server is empty")
+	}
+
+	k, ok := sssCfg.KeyFile[server.env]
+	if !ok || k == "" {
+		return fmt.Errorf("no SSH Key file: %s %s(%s) \n", server.env, server.host_name, server.ip)
+	}
+
+	defPort, _ := sssCfg.SshPort[server.env]
+	if len(server.port) > 0 {
+		defPort = server.port
+	}
+
+	defUser, _ := sssCfg.UserName[server.env]
+	if len(server.user) > 0 {
+		defUser = server.user
+	}
+
+	var cmds []string
+
+	if defPort != "" {
+		cmds = append(cmds, "-p"+defPort)
+	}
+
+	if sssCfg.SshArgs != "" {
+		cmds = append(cmds, sssCfg.SshArgs)
+	}
+
+	if len(defUser) > 0 {
+		cmds = append(cmds, defUser+"@"+server.ip)
+	} else {
+		cmds = append(cmds, server.ip)
+	}
+
+	SetIterm2Env(sssCfg, server)
+	defer ResetIterm2Env(sssCfg)
+
+	sshClient := ssh.Client{
+		ServerAddress: server.ip + ":" + defPort,
+		KeyFile:       k,
+	}
+
+	sshClient.User = defUser
+	sshClient.Timeout = time.Second * 5
+
+	fmt.Printf("> connect %s: ssh -i %s %s@%s \n", server.host_name, k, sshClient.User, sshClient.ServerAddress)
+
+	err := sshClient.Connect()
+	if err != nil {
+		fmt.Printf("ssh err: %s \n", err)
+	} else if err = sshClient.Shell(); err != nil {
+		fmt.Printf("ssh err: %s \n", err)
+	}
 
 	return nil
 }

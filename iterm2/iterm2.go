@@ -8,6 +8,12 @@ import (
 	"strconv"
 )
 
+type RgbColor struct {
+	Red   int
+	Green int
+	Blue  int
+}
+
 const BEL = "\a"
 const ESC = "\033"
 
@@ -102,10 +108,23 @@ func PrintTabTitle(title string) {
 
 }
 
-func PrintTabBGColor(rgb int) {
+func PrintTabBGColor(c RgbColor) {
+	/*
+		echo -e "\033]6;1;bg;red;brightness;255\a"
+		echo -e "\033]6;1;bg;green;brightness;0\a"
+		echo -e "\033]6;1;bg;blue;brightness;255\a"
+	*/
+
 	PrintOSC()
-	//OSC 6 ; 1 ; bg ; red ; brightness ; [N] ST
-	fmt.Printf("6;1;bg;red;brightness;%d", rgb)
+	fmt.Printf("6;1;bg;red;brightness;%d", c.Red)
+	PrintST()
+
+	PrintOSC()
+	fmt.Printf("6;1;bg;green;brightness;%d", c.Green)
+	PrintST()
+
+	PrintOSC()
+	fmt.Printf("6;1;bg;blue;brightness;%d", c.Blue)
 	PrintST()
 }
 
