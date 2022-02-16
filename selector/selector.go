@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gdamore/tcell"
@@ -262,7 +264,34 @@ func ResetIterm2Env(sssCfg *SssConfig) {
 
 	iterm2.PrintRemoteHostName("")
 	iterm2.PrintTabTitle("")
-	iterm2.PrintResetTabBGColor()
+
+	var c *iterm2.RgbColor
+	tabBgColor := os.Getenv("IT2_TAB_BG_COLOR")
+	if tabBgColor != "" {
+		cl := strings.Split(tabBgColor, " ")
+
+		if len(cl) >= 3 {
+			c = &iterm2.RgbColor{
+				Green: 205,
+			}
+
+			if i, err := strconv.Atoi(cl[0]); err == nil {
+				c.Red = i
+			}
+			if i, err := strconv.Atoi(cl[1]); err == nil {
+				c.Green = i
+			}
+			if i, err := strconv.Atoi(cl[2]); err == nil {
+				c.Blue = i
+			}
+		}
+	}
+
+	if c != nil {
+		iterm2.PrintTabBGColor(*c)
+	} else {
+		iterm2.PrintResetTabBGColor()
+	}
 }
 
 func ExecSSH(sssCfg *SssConfig, server *server) error {
