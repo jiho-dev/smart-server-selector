@@ -142,7 +142,7 @@ func StartSSHExt(sssCfg *SssConfig, key string) error {
 */
 
 /*
-func ExecSSHOld(sssCfg *SssConfig, server *server) error {
+func ExecSSH(sssCfg *SssConfig, server *server) error {
 	if server == nil {
 		return fmt.Errorf("server is empty")
 	}
@@ -301,8 +301,25 @@ func ExecSSH(sssCfg *SssConfig, server *server) error {
 		cmds = append(cmds, server.ip)
 	}
 
-	SetIterm2Env(sssCfg, server)
-	defer ResetIterm2Env(sssCfg)
+	/*
+		signalChan := make(chan os.Signal, 1)
+		//signal.Notify(signalChan, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGUSR1)
+		signal.Notify(signalChan, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM)
+
+		for {
+			signal := <-signalChan
+			switch signal {
+			case syscall.SIGHUP:
+				fmt.Printf("SIGHUP(%d)\n", signal)
+			case syscall.SIGINT:
+				fmt.Printf("SIGINT(%d)\n", signal)
+			case syscall.SIGTERM:
+				fmt.Printf("SIGTERM(%d)\n", signal)
+			default:
+				fmt.Printf("Unknown signal(%d)\n", signal)
+			}
+		}
+	*/
 
 	sshClient := ssh.Client{
 		ServerAddress: server.ip + ":" + defPort,
@@ -317,7 +334,14 @@ func ExecSSH(sssCfg *SssConfig, server *server) error {
 	err := sshClient.Connect()
 	if err != nil {
 		fmt.Printf("ssh err: %s \n", err)
-	} else if err = sshClient.Shell(); err != nil {
+		return err
+	}
+
+	SetIterm2Env(sssCfg, server)
+	defer ResetIterm2Env(sssCfg)
+
+	err = sshClient.Shell()
+	if err != nil {
 		fmt.Printf("ssh err: %s \n", err)
 	}
 

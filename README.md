@@ -46,15 +46,45 @@ The whole process didn't need any additional permission like `root`.
 
 # Configuration
 
-After started, `smart-server-selector` will load servers from `~/.servers`, you can edit this file directly.
+After started, `smart-server-selector` will load servers from `~/.sssh/sss-host.cfg`, you can edit this file directly.
 
 These two format configurations are valid:
 
 ```python
+# full   : env host-type host-hame ip port user desc
+# simple : env host-type host-hame ip desc
+
 # comments, empty line is ok.
-test    10.10.10.1   description
-test    10.10.10.1   22     username   description
+aws dev my-dev 10.10.10.1 22 ubuntu "ubuntu develop vm"
+aws test my-test 10.10.10.2 22 test "ubuntu test vm"
+aws test1 my-test1 10.10.11.2 - - "ubuntu test vm"
+gcp simpe simpe-vm 10.10.10.3 "simple config server"
 ```
+
+`smart-server-selector` config from `~/.sssh/sss.yaml`
+
+
+```python
+---
+host-file: "/home/user.name/.ssh/sss-host.cfg"
+
+show-about: false
+show-badge: true
+
+ssh-port: 
+  - "aws": "22"
+  - "gcp": "222"
+
+user-name: 
+  - "aws": "centos"
+  - "gcp": "centos-gcp"
+
+ssh-key: 
+  - "aws" : "/home/user.name/ssh-keys/sshkey-aws.priv"
+  - "gcp" : "/home/user.name/ssh-keys/sshkey-gcp.priv"
+
+```
+
 
 Explain:
 
