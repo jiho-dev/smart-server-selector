@@ -61,6 +61,17 @@ aws test1 my-test1 10.10.11.2 - - "ubuntu test vm"
 gcp simpe simpe-vm 10.10.10.3 "simple config server"
 ```
 
+
+Explain:
+
++ `test`: environment name, like test/pre/prod, no limit.
++ `10.10.10.1`: host name, could `ip` or `hostname`.
++ `22`: ssh port
++ `username`: ssh login name
++ `description`: any text
+
+If your configuration is invalid, `smart-server-selector` will ignore it and print notice info.
+
 `smart-server-selector` config from `~/.sssh/sss.yaml`
 
 
@@ -85,16 +96,6 @@ ssh-key:
 
 ```
 
-
-Explain:
-
-+ `test`: environment name, like test/pre/prod, no limit.
-+ `10.10.10.1`: host name, could `ip` or `hostname`.
-+ `22`: ssh port
-+ `username`: ssh login name
-+ `description`: any text
-
-If your configuration is invalid, `smart-server-selector` will ignore it and print notice info.
 
 # Advice
 
