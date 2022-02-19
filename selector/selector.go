@@ -91,7 +91,7 @@ func startSSH() {
 
 		ExecSSH(SssCfg, &s)
 		// XXX: stop selector menu
-		app.Stop()
+		//app.Stop()
 	})
 
 }
