@@ -28,13 +28,14 @@ var (
 )
 
 type SssConfig struct {
-	HostFile  string
-	ShowBadge bool // Show hostname+ip as Badge in iterms2
-	ShowAbout bool
-	KeyFile   map[string]string // key: env, data: ssh key file
-	SshPort   map[string]string // key: env, data: ssh port
-	UserName  map[string]string // key: env, data: user name
-	SshArgs   string
+	HostFile    string
+	ShowBadge   bool // Show hostname+ip as Badge in iterms2
+	ShowAbout   bool
+	UseSshShell bool
+	KeyFile     map[string]string // key: env, data: ssh key file
+	SshPort     map[string]string // key: env, data: ssh port
+	UserName    map[string]string // key: env, data: user name
+	SshArgs     string
 }
 
 var SssCfg *SssConfig

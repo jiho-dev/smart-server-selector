@@ -89,6 +89,7 @@ func startSSH() {
 			return
 		}
 
+		//SssCfg.UseSshShell = true
 		ExecSSH(SssCfg, &s)
 		// XXX: stop selector menu
 		//app.Stop()
@@ -118,113 +119,6 @@ func execute(name string, args ...string) {
 		getchar()
 	}
 }
-
-/*
-func StartSSHExt(sssCfg *SssConfig, key string) error {
-	serverList := LoadServers(sssCfg)
-	kw := strings.ToLower(key)
-	var server *server
-
-	for _, s := range serverList {
-		if strings.ToLower(s.host_name) == kw {
-			server = &s
-			break
-		} else if strings.ToLower(s.ip) == kw {
-			server = &s
-			break
-		}
-	}
-
-	if server == nil {
-		return fmt.Errorf("Not server to connect: %s", key)
-	}
-
-	return ExecSSH(sssCfg, server)
-}
-*/
-
-/*
-func ExecSSH(sssCfg *SssConfig, server *server) error {
-	if server == nil {
-		return fmt.Errorf("server is empty")
-	}
-
-	k, ok := sssCfg.KeyFile[server.env]
-	if !ok || k == "" {
-		return fmt.Errorf("no SSH Key file: %s %s(%s) \n", server.env, server.host_name, server.ip)
-	}
-
-	defPort, _ := sssCfg.SshPort[server.env]
-	if len(server.port) > 0 {
-		defPort = server.port
-	}
-
-	defUser, _ := sssCfg.UserName[server.env]
-	if len(server.user) > 0 {
-		defUser = server.user
-	}
-
-	var cmds []string
-
-	if defPort != "" {
-		cmds = append(cmds, "-p"+defPort)
-	}
-
-	if sssCfg.SshArgs != "" {
-		cmds = append(cmds, sssCfg.SshArgs)
-	}
-
-	if len(defUser) > 0 {
-		cmds = append(cmds, defUser+"@"+server.ip)
-	} else {
-		cmds = append(cmds, server.ip)
-	}
-
-	if sssCfg.ShowBadge {
-		badge := server.host_name + ":" + server.ip
-		iterm2.PrintBadge(badge)
-	}
-
-	iterm2.PrintHostName()
-
-	iterm2.PrintTabTitle(server.host_name)
-
-	var c *iterm2.RgbColor
-	switch server.host_type {
-	case "blackpearl":
-		c = &iterm2.RgbColor{
-			Red: 255,
-		}
-	case "vrouter":
-		c = &iterm2.RgbColor{
-			Blue: 255,
-		}
-
-	default:
-		c = &iterm2.RgbColor{
-			Green: 205,
-		}
-
-	}
-
-	iterm2.PrintTabBGColor(*c)
-	iterm2.PrintRemoteHostName(server.host_name)
-
-	cmds = append(cmds, "-i"+k)
-
-	execute("ssh", cmds...)
-
-	if sssCfg.ShowBadge {
-		iterm2.PrintBadge("")
-	}
-
-	iterm2.PrintRemoteHostName("")
-	iterm2.PrintTabTitle("")
-	iterm2.PrintResetTabBGColor()
-
-	return nil
-}
-*/
 
 func SetIterm2Env(sssCfg *SssConfig, server *server) {
 	if sssCfg.ShowBadge {
@@ -314,22 +208,6 @@ func ExecSSH(sssCfg *SssConfig, server *server) error {
 		defUser = server.user
 	}
 
-	var cmds []string
-
-	if defPort != "" {
-		cmds = append(cmds, "-p"+defPort)
-	}
-
-	if sssCfg.SshArgs != "" {
-		cmds = append(cmds, sssCfg.SshArgs)
-	}
-
-	if len(defUser) > 0 {
-		cmds = append(cmds, defUser+"@"+server.ip)
-	} else {
-		cmds = append(cmds, server.ip)
-	}
-
 	/*
 		signalChan := make(chan os.Signal, 1)
 		//signal.Notify(signalChan, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGUSR1)
@@ -349,6 +227,33 @@ func ExecSSH(sssCfg *SssConfig, server *server) error {
 			}
 		}
 	*/
+
+	if sssCfg.UseSshShell {
+		var cmds []string
+
+		if defPort != "" {
+			cmds = append(cmds, "-p"+defPort)
+		}
+
+		if sssCfg.SshArgs != "" {
+			cmds = append(cmds, sssCfg.SshArgs)
+		}
+
+		if len(defUser) > 0 {
+			cmds = append(cmds, defUser+"@"+server.ip)
+		} else {
+			cmds = append(cmds, server.ip)
+		}
+
+		cmds = append(cmds, "-i"+k)
+
+		execute("ssh", cmds...)
+		return nil
+	}
+
+	if defPort == "" {
+		defPort = "22"
+	}
 
 	sshClient := ssh.Client{
 		ServerAddress: server.ip + ":" + defPort,
