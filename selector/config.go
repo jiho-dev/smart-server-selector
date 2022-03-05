@@ -1,19 +1,14 @@
 package selector
 
 import (
+	"os/user"
+	"path/filepath"
+	"strings"
+
 	"github.com/spf13/viper"
 )
 
 var SidebarWidth = 23
-
-/*
-var SssFile = ".servers"
-
-func init() {
-	u, _ := user.Current()
-	SssFile = u.HomeDir + "/" + SssFile
-}
-*/
 
 var (
 	KeyConfigFile = "config"
@@ -40,6 +35,21 @@ type SssConfig struct {
 
 var SssCfg *SssConfig
 
+func ExpandPath(path string) string {
+	usr, _ := user.Current()
+	dir := usr.HomeDir
+
+	if path == "~" {
+		path = dir
+	} else if strings.HasPrefix(path, "~/") {
+		// Use strings.HasPrefix so we don't match paths like
+		// "/something/~/something/"
+		path = filepath.Join(dir, path[2:])
+	}
+
+	return path
+}
+
 func getConfigItem(key string) map[string]string {
 	values := map[string]string{}
 
@@ -63,7 +73,13 @@ func getConfigItem(key string) map[string]string {
 
 func GetConfig() *SssConfig {
 	hostFile := viper.GetString(KeyHostFile)
+	hostFile = ExpandPath(hostFile)
+
 	sshKeyFile := getConfigItem(KeySshKeyFile)
+	for k, v := range sshKeyFile {
+		sshKeyFile[k] = ExpandPath(v)
+	}
+
 	userName := getConfigItem(KeyUserName)
 	sshPort := getConfigItem(KeySshPort)
 	showAbout := viper.GetBool(KeyShowAbout)

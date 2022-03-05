@@ -46,10 +46,12 @@ func (a serverArray) Less(i, j int) bool {
 // load servers from config file.
 func LoadServers(sssCfg *SssConfig) (arr []server) {
 	arr = make([]server, 0)
-	fs, _ := ioutil.ReadFile(sssCfg.HostFile)
-	if len(fs) == 0 {
+	fs, err := ioutil.ReadFile(sssCfg.HostFile)
+	if err != nil {
+		fmt.Printf("Cannot read Hostfile: %s, %v\n", sssCfg.HostFile, err)
 		return
 	}
+
 	body := string(fs)
 	var errs []string
 	for _, line := range strings.Split(body, "\n") {
