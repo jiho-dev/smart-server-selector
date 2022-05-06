@@ -4,8 +4,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/gdamore/tcell"
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	"github.com/sirupsen/logrus"
+	"github.com/sisyphsu/smart-server-selector/log"
 )
 
 const (
@@ -27,6 +29,12 @@ type ServerUI struct {
 	kws     []string
 	visible []server
 	all     []server
+
+	Logger *logrus.Logger
+}
+
+func init() {
+	log.InitLogger(logrus.InfoLevel)
 }
 
 func newServersUI(all []server) *ServerUI {
@@ -34,7 +42,11 @@ func newServersUI(all []server) *ServerUI {
 	flex.SetBorder(true).
 		SetBorderColor(tcell.ColorDarkCyan).
 		SetBackgroundColor(tcell.ColorBlack)
-	v := &ServerUI{flex: flex, all: all}
+	v := &ServerUI{
+		flex:   flex,
+		all:    all,
+		Logger: log.GetLogger(),
+	}
 
 	app.SetAfterDrawFunc(func(screen tcell.Screen) {
 		v.render()
@@ -45,6 +57,9 @@ func newServersUI(all []server) *ServerUI {
 
 func (s *ServerUI) onEvent(event *tcell.EventKey) bool {
 	l := len(s.visible)
+
+	//s.Logger.Infof("onEvent %s, len=%d, offset=%d", event.Name(), l, s.offset)
+
 	switch event.Key() {
 	case tcell.KeyDown, tcell.KeyTab, tcell.KeyPgDn: // select down
 		s.selectOffset((s.offset + 1 + l) % l)
@@ -85,6 +100,7 @@ func (s *ServerUI) flushVisible() {
 	var result []server
 	for _, server := range s.all {
 		server.score = 0
+
 		for _, kw := range kws {
 			kw = strings.ToLower(kw)
 			if strings.Contains(strings.ToLower(server.env), kw) {
@@ -92,6 +108,7 @@ func (s *ServerUI) flushVisible() {
 				server.score |= MATCH_ENV
 				matched |= MATCH_ENV
 			}
+
 			if strings.Contains(strings.ToLower(server.host_type), kw) {
 				//server.score += 500
 				server.score |= MATCH_HOST_TYPE
@@ -165,6 +182,7 @@ func (s *ServerUI) render() {
 		servers = servers[offset-rowNum : offset]
 		offset = rowNum - 1
 	}
+
 	for i, row := range s.rows {
 		var selected = i == offset
 		var curr *server
@@ -172,6 +190,7 @@ func (s *ServerUI) render() {
 			tmp := servers[i]
 			curr = &tmp
 		}
+
 		row.render(curr, selected, s.kws)
 	}
 }

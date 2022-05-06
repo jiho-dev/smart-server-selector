@@ -8,8 +8,8 @@ import (
 
 	"github.com/mattn/go-runewidth"
 	"github.com/rivo/tview"
-	log "github.com/sirupsen/logrus"
 	"github.com/sisyphsu/smart-server-selector/config"
+	"github.com/sisyphsu/smart-server-selector/log"
 	"github.com/sisyphsu/smart-server-selector/selector"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -46,7 +46,7 @@ func init() {
 		//level := logrus.InfoLevel
 
 		//log.NewLogger(logConfig)
-		log.SetFormatter(&log.JSONFormatter{})
+		//log.SetFormatter(&log.JSONFormatter{})
 
 		/*
 			// show all configs
@@ -73,7 +73,8 @@ func init() {
 	rootCmd.PersistentFlags().String(selector.KeySshArgs, "", "Default SSH Args")
 
 	if err := viper.BindPFlags(rootCmd.PersistentFlags()); err != nil {
-		log.Errorf("failed to bind flags: %v", err)
+		//log.Errorf("failed to bind flags: %v", err)
+		fmt.Printf("failed to bind flags: %v \n", err)
 	}
 }
 
@@ -107,7 +108,8 @@ func Main(cmd *cobra.Command, args []string) {
 	}
 
 	if idx != -1 {
-		selector.ExecSSH(cfg, &servers[idx])
+		logger := log.GetLogger()
+		selector.ExecSSH(cfg, &servers[idx], logger)
 	} else {
 		runewidth.DefaultCondition.EastAsianWidth = false
 		app := tview.NewApplication()

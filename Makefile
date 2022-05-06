@@ -2,6 +2,7 @@ BIN=sss
 
 all:
 	go build -o ${BIN}
+	cp sss ~/bin/
 
 menu:
 #	./${BIN}

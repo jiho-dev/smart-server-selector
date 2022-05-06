@@ -3,7 +3,7 @@ package selector
 import (
 	"strings"
 
-	"github.com/gdamore/tcell"
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
@@ -43,23 +43,27 @@ func newRow() *row {
 	r.flex.AddItem(r.desc, 0, 10, false)
 	//r.flex.AddItem(r.score, 0, 10, false)
 
-	r.env.SetBackgroundColor(tcell.ColorDefault)
-	r.host_type.SetBackgroundColor(tcell.ColorDefault)
-	r.host_name.SetBackgroundColor(tcell.ColorDefault)
-	r.ip.SetBackgroundColor(tcell.ColorDefault)
-	r.desc.SetBackgroundColor(tcell.ColorDefault)
-	//r.score.SetBackgroundColor(tcell.ColorDefault)
+	var bgc tcell.Color = tcell.ColorDefault
+	r.env.SetBackgroundColor(bgc)
+	r.host_type.SetBackgroundColor(bgc)
+	r.host_name.SetBackgroundColor(bgc)
+	r.ip.SetBackgroundColor(bgc)
+	r.desc.SetBackgroundColor(bgc)
+	//r.score.SetBackgroundColor(bgc)
 
 	return r
 }
 
 // render the current row
 func (r *row) render(s *server, selected bool, kws []string) {
+	var bgc tcell.Color = tcell.ColorDefault
+
 	if selected {
-		r.flex.SetBackgroundColor(tcell.ColorRoyalBlue)
-	} else {
-		r.flex.SetBackgroundColor(tcell.ColorDefault)
+		bgc = tcell.ColorRoyalBlue
 	}
+
+	r.flex.SetBackgroundColor(bgc)
+
 	var env, host_type, host_name, ip, desc string
 	//var score string
 	if s != nil {
@@ -78,12 +82,20 @@ func (r *row) render(s *server, selected bool, kws []string) {
 			ip = ip + ":" + s.port
 		}
 	}
+
 	r.env.SetText(highlight(env, kws))
 	r.host_type.SetText(highlight(host_type, kws))
 	r.host_name.SetText(highlight(host_name, kws))
 	r.ip.SetText(highlight(ip, kws))
 	r.desc.SetText(highlight(desc, kws))
 	//r.score.SetText(score)
+
+	r.env.SetBackgroundColor(bgc)
+	r.host_type.SetBackgroundColor(bgc)
+	r.host_name.SetBackgroundColor(bgc)
+	r.ip.SetBackgroundColor(bgc)
+	r.desc.SetBackgroundColor(bgc)
+	//r.score.SetBackgroundColor(bgc)
 }
 
 // generate highlight text for the specified string

@@ -8,8 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gdamore/tcell"
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	"github.com/sirupsen/logrus"
 	"github.com/sisyphsu/smart-server-selector/iterm2"
 	"github.com/sisyphsu/smart-server-selector/ssh"
 )
@@ -48,6 +49,8 @@ func Start(sssCfg *SssConfig, searchKey string, server []server, a *tview.Applic
 }
 
 func onKeyEvent(event *tcell.EventKey) *tcell.EventKey {
+	//view.Logger.Infof("onEvent %s", event.Name())
+
 	if view.onEvent(event) {
 		return nil
 	}
@@ -90,7 +93,7 @@ func startSSH() {
 		}
 
 		//SssCfg.UseSshShell = true
-		ExecSSH(SssCfg, &s)
+		ExecSSH(SssCfg, &s, view.Logger)
 		// XXX: stop selector menu
 		//app.Stop()
 	})
@@ -188,7 +191,7 @@ func ResetIterm2Env(sssCfg *SssConfig) {
 	}
 }
 
-func ExecSSH(sssCfg *SssConfig, server *server) error {
+func ExecSSH(sssCfg *SssConfig, server *server, logger *logrus.Logger) error {
 	if server == nil {
 		return fmt.Errorf("server is empty")
 	}
@@ -263,7 +266,9 @@ func ExecSSH(sssCfg *SssConfig, server *server) error {
 	sshClient.User = defUser
 	sshClient.Timeout = time.Second * 5
 
-	fmt.Printf("> connect %s: ssh -i %s %s@%s \n", server.host_name, k, sshClient.User, sshClient.ServerAddress)
+	msg := fmt.Sprintf("connect %s: ssh -i %s %s@%s", server.host_name, k, sshClient.User, sshClient.ServerAddress)
+	fmt.Println("> ", msg)
+	logger.Printf(msg)
 
 	err := sshClient.Connect()
 	if err != nil {
